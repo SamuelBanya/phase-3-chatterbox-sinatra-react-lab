@@ -1,0 +1,199 @@
+<2022-09-17 Sat 21:30>: I ran the following commands witin the 'chatterbox-client' directory to start this lab:
+#+begin_src bash
+npm install
+npm run server
+#+end_src
+
+I then ran the following command within the 'chatterbox-server' directory:
+#+begin_src bash
+bundle install
+#+end_src
+
+Goals for this lab include:
+
+- Creating a model and migrations
+- Setting up the necessary routes to handle requests
+- Performing CRUD actions with Active Records
+- Sending the necessary JSON data in the responses
+
+In order to run tests for this lab, I needed to cd into the 'chatterbox-server' and run the following command to figure out tests for this assignment:
+#+begin_src bash
+rspec
+#+end_src
+
+I then created the related migration necessary for the 'Message' model with the 'bundle exec rake db:create_migration NAME=message' command:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-chatterbox-sinatra-react-lab/chatterbox-server
+ $ bundle exec rake db:create_migration NAME=message
+db/migrate/20220918030320_message.rb
+#+end_src
+
+I then placed the following contents inside the 'db/migrate/20220918030320_create_message.rb' file:
+#+begin_src ruby
+class CreateMessage < ActiveRecord::Migration[6.1]
+  def change
+    create_table :messages do |t|
+      t.string :body
+      t.string :username
+      t.timestamps
+    end
+  end
+end
+#+end_src
+
+I then ran the related migrated and seeded the database with the provided seeds with these commands:
+#+begin_src bash
+bundle exec rake db:migrate db:seed
+#+end_src
+
+<2022-09-17 Sat 22:09>: When I run this, I get this error now:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-chatterbox-sinatra-react-lab/chatterbox-server
+$ bundle exec rake db:migrate db:seed
+== 20220918030320 Message: migrating ==========================================
+-- create_table(:messages)
+   -> 0.0015s
+== 20220918030320 Message: migrated (0.0017s) =================================
+
+🌱 Seeding messages...
+-- create([{:body=>"Hello 👋", :username=>"Liza"}, {:body=>"Hi!", :username=>"Duane"}, {:body=>"let's get this chat app working", :username=>"Liza"}, {:body=>"ngl, this looks like a lot 😬", :username=>"Duane"}, {:body=>"You got this! 💪", :username=>"Liza"}])
+rake aborted!
+ActiveRecord::StatementInvalid: SQLite3::SQLException: near "[{:body=>"Hello 👋", :username=>"Liza"}, {:body=>"Hi!", :username=>"Duane"}, {:body=>"let's get this chat app working", :username=>"Liza"}, {:body=>"ngl, this looks like a lot 😬", :username=>"Duane"}, {:body=>"You got this! 💪", :username=>"Liza"}]": syntax error
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:147:in `initialize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:147:in `new'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:147:in `prepare'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/sqlite3/database_statements.rb:50:in `block (2 levels) in exec_query'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies/interlock.rb:48:in `block in permit_concurrent_loads'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/share_lock.rb:187:in `yield_shares'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies/interlock.rb:47:in `permit_concurrent_loads'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/sqlite3/database_statements.rb:47:in `block in exec_query'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract_adapter.rb:696:in `block (2 levels) in log'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:26:in `block (2 levels) in synchronize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `handle_interrupt'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `block in synchronize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `handle_interrupt'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `synchronize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract_adapter.rb:695:in `block in log'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/notifications/instrumenter.rb:24:in `instrument'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract_adapter.rb:687:in `log'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/sqlite3/database_statements.rb:46:in `exec_query'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract/database_statements.rb:136:in `exec_insert'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract/database_statements.rb:171:in `insert'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract/query_cache.rb:22:in `create'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:929:in `block in method_missing'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:897:in `block in say_with_time'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:897:in `say_with_time'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:918:in `method_missing'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:658:in `method_missing'
+db/seeds.rb:3:in `<top (required)>'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:326:in `load'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:326:in `block in load'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:299:in `load_dependency'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:326:in `load'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sinatra-activerecord-2.0.23/lib/sinatra/activerecord/rake/activerecord_6.rb:3:in `load_seed'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/tasks/database_tasks.rb:450:in `load_seed'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/railties/databases.rake:392:in `block (2 levels) in <top (required)>'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/rake-13.0.6/exe/rake:27:in `<top (required)>'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/bin/ruby_executable_hooks:22:in `eval'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/bin/ruby_executable_hooks:22:in `<main>'
+
+Caused by:
+SQLite3::SQLException: near "[{:body=>"Hello 👋", :username=>"Liza"}, {:body=>"Hi!", :username=>"Duane"}, {:body=>"let's get this chat app working", :username=>"Liza"}, {:body=>"ngl, this looks like a lot 😬", :username=>"Duane"}, {:body=>"You got this! 💪", :username=>"Liza"}]": syntax error
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:147:in `initialize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:147:in `new'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:147:in `prepare'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/sqlite3/database_statements.rb:50:in `block (2 levels) in exec_query'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies/interlock.rb:48:in `block in permit_concurrent_loads'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/share_lock.rb:187:in `yield_shares'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies/interlock.rb:47:in `permit_concurrent_loads'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/sqlite3/database_statements.rb:47:in `block in exec_query'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract_adapter.rb:696:in `block (2 levels) in log'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:26:in `block (2 levels) in synchronize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `handle_interrupt'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `block in synchronize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `handle_interrupt'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `synchronize'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract_adapter.rb:695:in `block in log'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/notifications/instrumenter.rb:24:in `instrument'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract_adapter.rb:687:in `log'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/sqlite3/database_statements.rb:46:in `exec_query'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract/database_statements.rb:136:in `exec_insert'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract/database_statements.rb:171:in `insert'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/connection_adapters/abstract/query_cache.rb:22:in `create'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:929:in `block in method_missing'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:897:in `block in say_with_time'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:897:in `say_with_time'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:918:in `method_missing'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/migration.rb:658:in `method_missing'
+db/seeds.rb:3:in `<top (required)>'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:326:in `load'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:326:in `block in load'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:299:in `load_dependency'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activesupport-6.1.4/lib/active_support/dependencies.rb:326:in `load'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/sinatra-activerecord-2.0.23/lib/sinatra/activerecord/rake/activerecord_6.rb:3:in `load_seed'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/tasks/database_tasks.rb:450:in `load_seed'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/activerecord-6.1.4/lib/active_record/railties/databases.rake:392:in `block (2 levels) in <top (required)>'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/gems/rake-13.0.6/exe/rake:27:in `<top (required)>'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/bin/ruby_executable_hooks:22:in `eval'
+/Users/samuelbanya/.rvm/gems/ruby-2.7.4/bin/ruby_executable_hooks:22:in `<main>'
+Tasks: TOP => db:seed
+(See full trace by running task with --trace)
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-chatterbox-sinatra-react-lab/chatterbox-server
+ $
+#+end_src
+
+<2022-09-17 Sat 22:11>: The reason I had the errors above is that I forgot to create the necessary model since I only created the migration.
+
+I then created the 'chatterbox-server/app/models/message.rb' file with the following contents:
+#+begin_src ruby
+class Message < ActiveRecord::Base
+end
+#+end_src
+
+I then re-ran the same two commands to migrate the database and seed the database once more which worked as intended:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-3/phase-3-chatterbox-sinatra-react-lab/chatterbox-server
+ $ bundle exec rake db:migrate db:seed
+🌱 Seeding messages...
+✅ Done seeding!
+#+end_src
+
+I then modified the 'chatterbox-server/app/controllers/appliction_controller.rb' file with the following contents to create the appropriate routes for the lab:
+#+begin_src ruby
+class ApplicationController < Sinatra::Base
+  set :default_content_type, "application/json"
+  # GET /messages: returns an array of all messages as JSON, ordered by created_at in ascending order.
+  get "/messages" do
+    # First attempt:
+    # messages = Message.all.order(created_at: :asc)
+    messages = Message.all.order(:created_at)
+    messages.to_json()
+  end
+
+  # POST /messages: creates a new message with a body and username from params, and returns the newly created post as JSON.
+  post "/messages" do
+    messages = Message.create(
+      body: params[:body],
+      username: params[:username]
+    )
+    messages.to_json()
+  end
+
+  # PATCH /messages/:id: updates the body of the message using params, and returns the updated message as JSON.
+  patch "/messages/:id" do
+    message = Message.find(params[:id])
+    message.update(
+      body: params[:body]
+    )
+    message.to_json()
+  end
+
+  # DELETE /messages/:id: deletes the message from the database.
+  delete "/messages/:id" do
+    message = Message.find(params[:id])
+    message.destroy()
+    message.to_json()
+  end
+end
+
+#+end_src
